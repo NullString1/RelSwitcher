@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:screenOrientation="portrait">
+
+    <Spinner
+        android:id="@+id/devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/Hon"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="44dp"
+        android:text="@string/hon"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/Hoff"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/Hon"
+        android:layout_marginTop="15dp"
+        android:text="@string/hoff"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/Hstatus"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/Hoff"
+        android:layout_marginTop="15dp"
+        android:text="@string/status"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/texts1"
+        android:layout_width="match_parent"
+        android:layout_height="103dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="143dp"
+        android:fontFamily="monospace"
+        android:text="@string/test_values_h_w"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Holo.Large" />
+
+    <EditText
+        android:id="@+id/timeon"
+        android:layout_width="41dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/texts1"
+        android:layout_marginTop="-143dp"
+        android:ems="10"
+        android:inputType="number"
+        android:text="60" />
+
+    <TextView
+        android:id="@+id/minText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="106dp"
+        android:layout_toEndOf="@+id/timeon"
+        android:text="Min" />
+
+    <Button
+        android:id="@+id/HtimeB"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/texts1"
+        android:layout_marginStart="71dp"
+        android:layout_marginTop="-143dp"
+        android:text="Heating On (With Time)"
+        android:textSize="12sp" />
+
+</RelativeLayout>

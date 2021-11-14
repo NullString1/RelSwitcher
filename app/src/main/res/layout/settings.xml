@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:screenOrientation="portrait">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp">
+
+        <CheckBox
+            android:id="@+id/dev1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/dev1Name"
+            android:layout_width="106dp"
+            android:layout_height="46dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/home"
+            android:inputType="textPersonName"
+            android:text="@string/home" tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/dev1Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/_07xxx_xxxxxx"
+            android:inputType="phone"
+            android:maxLength="11"
+            android:singleLine="false"
+            tools:targetApi="o" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+
+        <CheckBox
+            android:id="@+id/dev2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/dev2Name"
+            android:layout_width="106dp"
+            android:layout_height="46dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/work"
+            android:inputType="textPersonName"
+            android:text="@string/work" tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/dev2Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:ems="10"
+            android:maxLength="11"
+            android:hint="@string/_07xxx_xxxxxx"
+            android:inputType="phone" tools:targetApi="o" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+
+        <CheckBox
+            android:id="@+id/dev3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/dev3Name"
+            android:layout_width="106dp"
+            android:layout_height="46dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/other"
+            android:inputType="textPersonName"
+            android:text="@string/other" tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/dev3Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:ems="10"
+            android:maxLength="11"
+            android:hint="@string/_07xxx_xxxxxx"
+            android:inputType="phone" tools:targetApi="o" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/saveB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/save" />
+    </TableRow>
+
+</TableLayout>
