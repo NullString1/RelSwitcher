@@ -104,6 +104,29 @@
             android:inputType="phone" tools:targetApi="o" />
 
     </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:text=" IP:"
+            android:textSize="22sp" />
+
+        <EditText
+            android:id="@+id/netIP"
+            android:layout_width="143dp"
+            android:layout_height="46dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="1.1.1.1"
+            android:inputType="textUri"
+            android:text=""
+            tools:targetApi="o" />
+    </TableRow>
 
     <TableRow
         android:layout_width="match_parent"

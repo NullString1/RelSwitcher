@@ -2,12 +2,13 @@ package com.danielkern.relswitcher;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ public class settings extends AppCompatActivity {
     SharedPreferences devicesPref;
     Gson gson = new Gson();
     String dev1json, dev2json, dev3json;
+    EditText netIP;
 
     class device {
         boolean enabled;
@@ -45,6 +47,8 @@ public class settings extends AppCompatActivity {
         dev3=findViewById(R.id.dev3);
         name3=findViewById(R.id.dev3Name);
         num3=findViewById(R.id.dev3Num);
+
+        netIP=findViewById(R.id.netIP);
 
         device1 = new device();
         device2 = new device();
@@ -121,6 +125,7 @@ public class settings extends AppCompatActivity {
                 SetPref("device1", dev1json);
                 SetPref("device2", dev2json);
                 SetPref("device3", dev3json);
+                SetPref("netIP", netIP.getText().toString());
 
             }
         });
@@ -168,6 +173,9 @@ public class settings extends AppCompatActivity {
         dev3.setChecked(GetEn("device3", false));
         name3.setText(GetName("device3", "Other"));
         num3.setText(GetNum("device3"));
+
+        netIP.setText(devicesPref.getString("netIP", "1.1.1.1"));
+
     }
 
 }

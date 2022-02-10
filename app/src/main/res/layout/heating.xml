@@ -88,4 +88,14 @@
         android:text="Heating On (With Time)"
         android:textSize="12sp" />
 
+    <TextView
+        android:id="@+id/tempLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="269dp"
+        android:text="Temperature: 0°C"
+        android:textSize="22sp" />
+
 </RelativeLayout>

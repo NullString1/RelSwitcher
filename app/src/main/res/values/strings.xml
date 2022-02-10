@@ -20,6 +20,7 @@
     <string name="work">Work</string>
     <string name="other">Other</string>
     <string name="save">Save</string>
+    <string name="ip">IP:</string>
 
 
 </resources>

@@ -9,11 +9,11 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -27,8 +27,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Objects;
 
 
@@ -37,8 +46,9 @@ import java.util.Objects;
  */
 
 public class heating extends Fragment {
+    OkHttpClient client;
     Button BtnHOFF, BtnHON, BtnHST, HtimeB;
-    TextView textsView;
+    TextView textsView, tempLabel;
     Spinner devicesS;
     settings.device device1, device2, device3, currentD;
     boolean h, w;
@@ -57,6 +67,7 @@ public class heating extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        client = new OkHttpClient();
         mContext = getContext();
         activity = getActivity();
         View view = inflater.inflate(R.layout.heating, container, false);
@@ -70,6 +81,7 @@ public class heating extends Fragment {
         textsView = view.findViewById(R.id.texts1);
         HtimeB = view.findViewById(R.id.HtimeB);
         devicesS = view.findViewById(R.id.devices);
+        tempLabel = view.findViewById(R.id.tempLabel);
         BtnHOFF.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sendMsg("#REL2=OFF", currentD.number);
@@ -168,7 +180,11 @@ public class heating extends Fragment {
         device1json = devicesPref.getString("device1", "");
         device2json = devicesPref.getString("device2", "");
         device3json = devicesPref.getString("device3", "");
-
+        try {
+            getTemp();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(!device1json.equals("") && !device2json.equals("") && !device3json.equals("")){
             device1 = gson.fromJson(device1json, settings.device.class);
             device2 = gson.fromJson(device2json, settings.device.class);
@@ -305,6 +321,28 @@ public class heating extends Fragment {
         }
     };
 
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    Call post(String url, String json, Callback callback) {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+    Call get(String url, Callback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
     public String convNum(String num){
         char[] numA = num.toCharArray();
         char[] numB = new char[13];
@@ -320,6 +358,7 @@ public class heating extends Fragment {
             smsManager.sendTextMessage(num, null, msg, null, null);
             Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), "SMS Sent!",
                     Toast.LENGTH_LONG).show();
+            getTemp();
         } catch (Exception e) {
             Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(),
                     "SMS failed, grant permission!",
@@ -335,6 +374,37 @@ public class heating extends Fragment {
         else notificationManager.notify(13, h0_w0.build());
     }
 
+    public void getTemp() throws IOException {
+
+        String ip = devicesPref.getString("netIP", "1.1.1.1");
+        if (tempLabel != null && !ip.equals("1.1.1.1")) {
+            tempLabel.getText();
+            get("http://" + ip + "/temp", new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("temp", "onFailure: " + e.toString());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String resp = response.body().string();
+                        getActivity().runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                tempLabel.setText("Temperature: " + resp);
+                                Log.d("temp", "onResponse: " + resp);
+
+
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     public void onDestroy() throws IllegalArgumentException {
