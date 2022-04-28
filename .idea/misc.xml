@@ -3,10 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/bilbo/AndroidStudioProjects/RelSwitcher/app/src/main/res/layout/activity_main.xml" value="0.12689969604863222" />
-        <entry key="..\:/Users/bilbo/AndroidStudioProjects/RelSwitcher/app/src/main/res/layout/heating.xml" value="0.18958333333333333" />
-        <entry key="..\:/Users/bilbo/AndroidStudioProjects/RelSwitcher/app/src/main/res/layout/settings.xml" value="0.2609375" />
-        <entry key="..\:/Users/bilbo/AndroidStudioProjects/RelSwitcher/app/src/main/res/layout/water.xml" value="0.18958333333333333" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.12689969604863222" />
+        <entry key="app/src/main/res/layout/heating.xml" value="0.18958333333333333" />
+        <entry key="app/src/main/res/layout/settings.xml" value="0.2609375" />
+        <entry key="app/src/main/res/layout/water.xml" value="0.18958333333333333" />
       </map>
     </option>
   </component>
