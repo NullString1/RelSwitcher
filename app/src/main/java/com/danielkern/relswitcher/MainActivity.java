@@ -1,7 +1,6 @@
 package com.danielkern.relswitcher;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.tabs.TabLayout;
@@ -12,7 +11,6 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.Toolbar;
-import android.view.View;
 
 import com.karan.churi.PermissionManager.PermissionManager;
 
@@ -24,46 +22,43 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         ViewPager mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
         settingsB = findViewById(R.id.settings);
         TabLayout tabLayout = findViewById(R.id.tabs);
 
+        setSupportActionBar(toolbar);
+
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
         permission=new PermissionManager() {};
         permission.checkAndRequestPermissions(this);
 
-        settingsB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent settingsIntent = new Intent(MainActivity.this, settings.class);
-                MainActivity.this.startActivity(settingsIntent);
-            }
+        settingsB.setOnClickListener(v -> {
+            Intent settingsIntent = new Intent(MainActivity.this, Settings.class);
+            MainActivity.this.startActivity(settingsIntent);
         });
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        @NonNull
         @Override
         public Fragment getItem(int position) {
-            switch (position){
-                case 0:
-                    return new heating();
-                case 1:
-                    return new water();
-            }
-            return null;
+            return switch (position) {
+                case 0 -> new Heating();
+                case 1 -> new Water();
+                default -> null;
+            };
         }
 
         @Override
@@ -74,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         permission.checkResult(requestCode,permissions, grantResults);
     }
 

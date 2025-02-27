@@ -4,16 +4,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-public class settings extends AppCompatActivity {
+public class Settings extends AppCompatActivity {
     CheckBox dev1,dev2,dev3;
     TextView num1,num2,num3;
     TextView name1,name2,name3;
@@ -24,7 +22,7 @@ public class settings extends AppCompatActivity {
     String dev1json, dev2json, dev3json;
     EditText netIP;
 
-    class device {
+    static class device {
         boolean enabled;
         String name;
         String number;
@@ -71,63 +69,51 @@ public class settings extends AppCompatActivity {
         LoadOptions();
 
 
-        dev1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                device1.enabled = dev1.isChecked();
-                device1.name = name1.getText().toString();
-                device1.number = num1.getText().toString();
-                dev1json = gson.toJson(device1);
-                SetPref("device1", dev1json);
-            }
+        dev1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            device1.enabled = dev1.isChecked();
+            device1.name = name1.getText().toString();
+            device1.number = num1.getText().toString();
+            dev1json = gson.toJson(device1);
+            SetPref("device1", dev1json);
         });
 
-        dev2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                device2.enabled = dev2.isChecked();
-                device2.name = name2.getText().toString();
-                device2.number = num2.getText().toString();
-                dev2json = gson.toJson(device2);
-                SetPref("device2", dev2json);
-            }
+        dev2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            device2.enabled = dev2.isChecked();
+            device2.name = name2.getText().toString();
+            device2.number = num2.getText().toString();
+            dev2json = gson.toJson(device2);
+            SetPref("device2", dev2json);
         });
 
-        dev3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                device3.enabled = dev3.isChecked();
-                device3.name = name3.getText().toString();
-                device3.number = num3.getText().toString();
-                dev3json = gson.toJson(device3);
-                SetPref("device3", dev3json);
-            }
+        dev3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            device3.enabled = dev3.isChecked();
+            device3.name = name3.getText().toString();
+            device3.number = num3.getText().toString();
+            dev3json = gson.toJson(device3);
+            SetPref("device3", dev3json);
         });
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                device1.enabled = dev1.isChecked();
-                device1.name = name1.getText().toString();
-                device1.number = num1.getText().toString();
+        save.setOnClickListener(v -> {
+            device1.enabled = dev1.isChecked();
+            device1.name = name1.getText().toString();
+            device1.number = num1.getText().toString();
 
-                device2.enabled = dev2.isChecked();
-                device2.name = name2.getText().toString();
-                device2.number = num2.getText().toString();
+            device2.enabled = dev2.isChecked();
+            device2.name = name2.getText().toString();
+            device2.number = num2.getText().toString();
 
-                device3.enabled = dev3.isChecked();
-                device3.name = name3.getText().toString();
-                device3.number = num3.getText().toString();
+            device3.enabled = dev3.isChecked();
+            device3.name = name3.getText().toString();
+            device3.number = num3.getText().toString();
 
-                dev1json = gson.toJson(device1);
-                dev2json = gson.toJson(device2);
-                dev3json = gson.toJson(device3);
-                SetPref("device1", dev1json);
-                SetPref("device2", dev2json);
-                SetPref("device3", dev3json);
-                SetPref("netIP", netIP.getText().toString());
+            dev1json = gson.toJson(device1);
+            dev2json = gson.toJson(device2);
+            dev3json = gson.toJson(device3);
+            SetPref("device1", dev1json);
+            SetPref("device2", dev2json);
+            SetPref("device3", dev3json);
+            SetPref("netIP", netIP.getText().toString());
 
-            }
         });
     }
 
