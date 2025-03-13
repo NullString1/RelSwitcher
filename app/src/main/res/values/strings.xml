@@ -21,6 +21,7 @@
     <string name="other">Other</string>
     <string name="save">Save</string>
     <string name="ip">IP:</string>
+    <string name="temperature">"Temperature: "</string>
 
 
 </resources>

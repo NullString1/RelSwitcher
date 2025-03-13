@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -96,7 +95,7 @@ public class Settings extends AppCompatActivity {
             SetPref("device2", dev2json);
             SetPref("device3", dev3json);
             SetPref("netIP", netIP.getText().toString());
-
+            finish();
         });
     }
 

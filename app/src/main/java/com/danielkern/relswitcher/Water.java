@@ -7,20 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +25,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -42,7 +37,6 @@ public class Water extends Fragment {
     TextView textsView;
     Spinner devicesS;
     Device device1, device2, device3, currentD;
-    boolean h, w;
     Intent notificationIntent;
     Context mContext;
     Activity mActivity;
@@ -51,10 +45,10 @@ public class Water extends Fragment {
     String number;
     SharedPreferences devicesPref;
     NotificationManagerCompat notificationManager;
-    public NotificationCompat.Builder h1_w1, h1_w0, h0_w1, h0_w0;
     View heatingView;
     Gson gson;
     String device1json, device2json, device3json;
+    Common common;
 
     @Nullable
     @Override
@@ -64,6 +58,8 @@ public class Water extends Fragment {
 
         mContext = requireContext();
         mActivity = requireActivity();
+
+        common = Common.getInstance(mActivity, view, heatingView);
 
         devicesPref = mActivity.getSharedPreferences("devices", Context.MODE_PRIVATE);
         number = "07xxx xxxxxx";
@@ -76,9 +72,9 @@ public class Water extends Fragment {
 
         notificationManager = NotificationManagerCompat.from(mContext);
 
-        BtnWOFF.setOnClickListener(view2 -> sendMsg("#REL1=OFF", currentD));
-        BtnWON.setOnClickListener(view3 -> sendMsg("#REL1=ON", currentD));
-        BtnWST.setOnClickListener(view4 -> sendMsg("#STATUS", currentD));
+        BtnWOFF.setOnClickListener(view2 -> common.sendMsg("#REL1=OFF", currentD));
+        BtnWON.setOnClickListener(view3 -> common.sendMsg("#REL1=ON", currentD));
+        BtnWST.setOnClickListener(view4 -> common.sendMsg("#STATUS", currentD));
 
         notificationIntent = new Intent(mContext, Heating.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -87,7 +83,7 @@ public class Water extends Fragment {
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         //H-On, W-ON
-        h1_w1 = new NotificationCompat.Builder(mContext, "13")
+        common.h1_w1 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating ON & Water ON")
@@ -95,21 +91,21 @@ public class Water extends Fragment {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         //H-OFF, W-ON
-        h0_w1 = new NotificationCompat.Builder(mContext, "13")
+        common.h0_w1 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating OFF & Water ON")
                 .setContentIntent(intent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         //H-ON, W-OFF
-        h1_w0 = new NotificationCompat.Builder(mContext, "13")
+        common.h1_w0 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating ON & Water OFF")
                 .setContentIntent(intent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         //H-OFF, W-OFF
-        h0_w0 = new NotificationCompat.Builder(mContext, "13")
+        common.h0_w0 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating OFF & Water OFF")
@@ -203,42 +199,6 @@ public class Water extends Fragment {
         return adapter;
     }
 
-
-    public void setMsg(String msg, String num, TextView textsView) {
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(mContext, "SMS failed, grant permission!", Toast.LENGTH_LONG).show();
-            return;
-        }
-       if (textsView != null) {
-           if (num.equals(number) || num.equals(convNum(number))) {                //works
-               if (msg.contains("REL 1 OFF")) {
-                   w=false;
-               } else if (msg.contains("REL 1 ON")) {
-                   w=true;
-               }
-               if (msg.contains("REL 2 OFF")) {
-                   h=false;
-               } else if (msg.contains("REL 2 ON")) {
-                   h=true;
-               }
-                sendNotification(h, w);
-                if (h && w) {
-                    textsView.setText(R.string.hON_wON);
-                    ((TextView) heatingView.findViewById(R.id.texts1)).setText(R.string.hON_wON);
-                } else if (h) {
-                    textsView.setText(R.string.hON_wOFF);
-                    ((TextView) heatingView.findViewById(R.id.texts1)).setText(R.string.hON_wOFF);
-                } else if (w) {
-                    textsView.setText(R.string.hOFF_wON);
-                    ((TextView) heatingView.findViewById(R.id.texts1)).setText(R.string.hOFF_wON);
-                } else {
-                    textsView.setText(R.string.hOFF_wOFF);
-                    ((TextView) heatingView.findViewById(R.id.texts1)).setText(R.string.hOFF_wOFF);
-                }
-            }
-        }
-    }
-
     private final BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -254,52 +214,11 @@ public class Water extends Fragment {
                         num = msgs[i].getOriginatingAddress();
                         msg = msgs[i].getMessageBody();
                     }
-                    setMsg(msg, num, textsView);
+                    common.setMsg(msg, num, number, textsView);
                 }
             }
         }
     };
-
-    public void sendNotification(boolean h, boolean w) {
-        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(mContext, "Notification failed, grant permission!", Toast.LENGTH_LONG).show();
-            ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
-            return;
-        }
-
-        if (h && w)
-            notificationManager.notify(13, h1_w1.build());
-        else if (!h && w) notificationManager.notify(13, h0_w1.build());
-        else if (h) notificationManager.notify(13, h1_w0.build());
-        else notificationManager.notify(13, h0_w0.build());
-    }
-
-    public String convNum(String num) {
-        char[] numA = num.toCharArray();
-        char[] numB = new char[13];
-        numB[0] = '+';
-        numB[1] = '4';
-        numB[2] = '4';
-        System.arraycopy(numA, 1, numB, 3, 10);
-        return new String(numB);
-    }
-
-    public void sendMsg(String msg, Device device) {
-        if (device == null || device.number == null || device.number.equals("07xxx xxxxxx")) {
-            Toast.makeText(mContext, "No device selected, or number not set!", Toast.LENGTH_LONG).show();
-            return;
-        }
-        try {
-            SmsManager smsManager = mContext.getSystemService(SmsManager.class).createForSubscriptionId(SmsManager.getDefaultSmsSubscriptionId());
-            smsManager.sendTextMessage(device.number, null, msg, null, null);
-            Toast.makeText(mContext, "SMS Sent!",
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(mContext,
-                    "SMS failed, grant permission!",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
 
     @Override
     public void onDestroy() throws IllegalArgumentException {

@@ -10,6 +10,7 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class SectionsPagerAdapter extends FragmentStateAdapter {
-        public SectionsPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull androidx.lifecycle.Lifecycle lifecycle) {
+        public SectionsPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
             super(fragmentManager, lifecycle);
         }
 
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             return switch (position) {
                 case 0 -> new Heating();
                 case 1 -> new Water();
-                default -> null;
+                default -> throw new IllegalStateException("Unexpected value: " + position);
             };
         }
 

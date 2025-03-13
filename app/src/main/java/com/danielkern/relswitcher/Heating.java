@@ -63,11 +63,11 @@ public class Heating extends Fragment {
     String[] devicesN;
     String number;
     SharedPreferences devicesPref;
-    NotificationManagerCompat notificationManager;
-    public NotificationCompat.Builder h1_w1, h1_w0, h0_w1, h0_w0;
     View waterView;
     Gson gson;
     String device1json, device2json, device3json;
+
+    Common common;
 
     @Nullable
     @Override
@@ -75,15 +75,14 @@ public class Heating extends Fragment {
         View view = inflater.inflate(R.layout.heating, container, false);
         waterView = inflater.inflate(R.layout.water, container, false);
 
-        client = new OkHttpClient();
-
         mContext = requireContext();
         mActivity = requireActivity();
+
+        common = Common.getInstance(mActivity, waterView, view);
 
         devicesPref = mActivity.getSharedPreferences("devices", Context.MODE_PRIVATE);
         number = "07xxx xxxxxx";
 
-        notificationManager = NotificationManagerCompat.from(mContext);
         BtnHOFF = view.findViewById(R.id.Hoff);
         BtnHON = view.findViewById(R.id.Hon);
         BtnHST = view.findViewById(R.id.Hstatus);
@@ -91,11 +90,11 @@ public class Heating extends Fragment {
         HtimeB = view.findViewById(R.id.HtimeB);
         devicesS = view.findViewById(R.id.devices);
         tempLabel = view.findViewById(R.id.tempLabel);
-        BtnHOFF.setOnClickListener(view1 -> sendMsg("#REL2=OFF", currentD));
-        BtnHON.setOnClickListener(view2 -> sendMsg("#REL2=ON", currentD));
-        BtnHST.setOnClickListener(view3 -> sendMsg("#STATUS", currentD));
+        BtnHOFF.setOnClickListener(view1 -> common.sendMsg("#REL2=OFF", currentD));
+        BtnHON.setOnClickListener(view2 -> common.sendMsg("#REL2=ON", currentD));
+        BtnHST.setOnClickListener(view3 -> common.sendMsg("#STATUS", currentD));
 
-        HtimeB.setOnClickListener(view4 -> sendMsg("#REL1=ON#" + "60", currentD));
+        HtimeB.setOnClickListener(view4 -> common.sendMsg("#REL1=ON#" + "60", currentD));
         notificationIntent = new Intent(mContext, Heating.class);
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -104,8 +103,7 @@ public class Heating extends Fragment {
         intent = PendingIntent.getActivity(getContext(), 0,
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        //H-On, W-ON
-        h1_w1 = new NotificationCompat.Builder(mContext, "13")
+        common.h1_w1 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating ON & Water ON")
@@ -113,21 +111,21 @@ public class Heating extends Fragment {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         //H-OFF, W-ON
-        h0_w1 = new NotificationCompat.Builder(mContext, "13")
+        common.h0_w1 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating OFF & Water ON")
                 .setContentIntent(intent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         //H-ON, W-OFF
-        h1_w0 = new NotificationCompat.Builder(mContext, "13")
+        common.h1_w0 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating ON & Water OFF")
                 .setContentIntent(intent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         //H-OFF, W-OFF
-        h0_w0 = new NotificationCompat.Builder(mContext, "13")
+        common.h0_w0 = new NotificationCompat.Builder(mContext, "13")
                 .setSmallIcon(R.mipmap.icon)
                 .setContentTitle("RelSwitcher")
                 .setContentText("Heating OFF & Water OFF")
@@ -157,7 +155,6 @@ public class Heating extends Fragment {
                 }
 
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 currentD = device1;
@@ -168,7 +165,7 @@ public class Heating extends Fragment {
         device2json = devicesPref.getString("device2", "");
         device3json = devicesPref.getString("device3", "");
         try {
-            getTemp();
+            common.getTemp(devicesPref, tempLabel);
         } catch (IOException e) {
             Log.e("RS-Heating", "onCreateView: ", e);
         }
@@ -224,37 +221,6 @@ public class Heating extends Fragment {
         return adapter;
     }
 
-    public void setMsg(String msg, String num, TextView textsView) {
-        if (textsView != null) {
-            if (num.equals(number) || num.equals(convNum(number))) {
-                if (msg.contains("REL 1 OFF")) {
-                    w=false;
-                } else if (msg.contains("REL 1 ON")) {
-                    w=true;
-                }
-                if (msg.contains("REL 2 OFF")) {
-                    h=false;
-                } else if (msg.contains("REL 2 ON")) {
-                    h=true;
-                }
-                sendNotification(h, w);
-                if (h && w) {
-                    textsView.setText(R.string.hON_wON);
-                    ((TextView) waterView.findViewById(R.id.texts1)).setText(R.string.hON_wON);
-                } else if (h) {
-                    textsView.setText(R.string.hON_wOFF);
-                    ((TextView) waterView.findViewById(R.id.texts1)).setText(R.string.hON_wOFF);
-                } else if (w) {
-                    textsView.setText(R.string.hOFF_wON);
-                    ((TextView) waterView.findViewById(R.id.texts1)).setText(R.string.hOFF_wON);
-                } else {
-                    textsView.setText(R.string.hOFF_wOFF);
-                    ((TextView) waterView.findViewById(R.id.texts1)).setText(R.string.hOFF_wOFF);
-                }
-            }
-        }
-    }
-
     public BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -270,88 +236,11 @@ public class Heating extends Fragment {
                         num = msgs[i].getOriginatingAddress();
                         msg = msgs[i].getMessageBody();
                     }
-                    setMsg(msg, num, textsView);
+                    common.setMsg(msg, num, number, textsView);
                 }
             }
         }
     };
-
-    void get(String url, Callback callback) {
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
-    }
-
-    public String convNum(String num) {
-        char[] numA = num.toCharArray();
-        char[] numB = new char[13];
-        numB[0] = '+';
-        numB[1] = '4';
-        numB[2] = '4';
-        System.arraycopy(numA, 1, numB, 3, 10);
-        return new String(numB);
-    }
-
-    public void sendMsg(String msg, Device device) {
-        if (device == null || device.number == null || device.number.equals("07xxx xxxxxx")) {
-            Toast.makeText(mContext, "No device selected, or number not set!", Toast.LENGTH_LONG).show();
-            return;
-        }
-        try {
-            SmsManager smsManager = mContext.getSystemService(SmsManager.class).createForSubscriptionId(SmsManager.getDefaultSmsSubscriptionId());
-            smsManager.sendTextMessage(device.number, null, msg, null, null);
-            Toast.makeText(mContext, "SMS Sent!",
-                    Toast.LENGTH_LONG).show();
-            getTemp();
-        } catch (Exception e) {
-            Toast.makeText(mContext,
-                    "SMS failed, grant permission!",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public void sendNotification(boolean h, boolean w) {
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
-            return;
-        }
-        if (h && w)
-            notificationManager.notify(13, h1_w1.build());
-        else if (!h && w) notificationManager.notify(13, h0_w1.build());
-        else if (h) notificationManager.notify(13, h1_w0.build());
-        else notificationManager.notify(13, h0_w0.build());
-    }
-
-    public void getTemp() throws IOException {
-        String ip = devicesPref.getString("netIP", "1.1.1.1");
-        if (tempLabel != null && !ip.equals("1.1.1.1")) {
-            String url = new HttpUrl.Builder()
-                    .scheme("http")
-                    .host(ip)
-                    .addPathSegment("temp")
-                    .build().toString();
-            get(url, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Log.e("temp", "onFailure: " + e);
-                }
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                        String resp = response.body().string();
-                        requireActivity().runOnUiThread(() -> {
-                            tempLabel.setText("Temperature: " + resp);
-                            Log.d("temp", "onResponse: " + resp);
-                        });
-                    }
-                }
-            });
-        }
-    }
 
     @Override
     public void onDestroy() throws IllegalArgumentException {
