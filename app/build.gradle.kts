@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.danielkern.relswitcher"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.danielkern.relswitcher"
-        minSdk = 31
-        versionCode =  10
-        versionName = "4.0.0"
+        minSdk = 33
+        versionCode =  11
+        versionName = "5.0.0"
     }
     buildTypes {
         release {

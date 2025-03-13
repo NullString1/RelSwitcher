@@ -2,7 +2,9 @@ package com.danielkern.relswitcher;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,62 +14,43 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 public class Settings extends AppCompatActivity {
-    CheckBox dev1,dev2,dev3;
-    TextView num1,num2,num3;
-    TextView name1,name2,name3;
+    CheckBox dev1, dev2, dev3;
+    TextView num1, num2, num3;
+    TextView name1, name2, name3;
     Button save;
-    device device1, device2, device3, currentD;
+    Device device1, device2, device3, currentD;
     SharedPreferences devicesPref;
     Gson gson = new Gson();
     String dev1json, dev2json, dev3json;
     EditText netIP;
 
-    static class device {
-        boolean enabled;
-        String name;
-        String number;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
         devicesPref = getSharedPreferences("devices", MODE_PRIVATE);
-        save=findViewById(R.id.saveB);
+        save = findViewById(R.id.saveB);
 
-        dev1=findViewById(R.id.dev1);
-        name1=findViewById(R.id.dev1Name);
-        num1=findViewById(R.id.dev1Num);
+        dev1 = findViewById(R.id.dev1);
+        name1 = findViewById(R.id.dev1Name);
+        num1 = findViewById(R.id.dev1Num);
         //
-        dev2=findViewById(R.id.dev2);
-        name2=findViewById(R.id.dev2Name);
-        num2=findViewById(R.id.dev2Num);
+        dev2 = findViewById(R.id.dev2);
+        name2 = findViewById(R.id.dev2Name);
+        num2 = findViewById(R.id.dev2Num);
         //
-        dev3=findViewById(R.id.dev3);
-        name3=findViewById(R.id.dev3Name);
-        num3=findViewById(R.id.dev3Num);
+        dev3 = findViewById(R.id.dev3);
+        name3 = findViewById(R.id.dev3Name);
+        num3 = findViewById(R.id.dev3Num);
 
-        netIP=findViewById(R.id.netIP);
+        netIP = findViewById(R.id.netIP);
 
-        device1 = new device();
-        device2 = new device();
-        device3 = new device();
-        currentD = new device();
+        device1 = new Device(dev1.isChecked(), name1.getText().toString(), num1.getText().toString());
+        device2 = new Device(dev2.isChecked(), name2.getText().toString(), num2.getText().toString());
+        device3 = new Device(dev3.isChecked(), name3.getText().toString(), num3.getText().toString());
+        currentD = device1;
 
-        Log.d("settings ", "onCreate: error in settings file");
-
-        device1.enabled = dev1.isChecked();
-        device1.name = name1.getText().toString();
-        device1.number = num1.getText().toString();
-
-        device2.enabled = dev2.isChecked();
-        device2.name = name2.getText().toString();
-        device2.number = num2.getText().toString();
-
-        device3.enabled = dev3.isChecked();
-        device3.name = name3.getText().toString();
-        device3.number = num3.getText().toString();
         LoadOptions();
-
 
         dev1.setOnCheckedChangeListener((buttonView, isChecked) -> {
             device1.enabled = dev1.isChecked();
@@ -120,35 +103,37 @@ public class Settings extends AppCompatActivity {
     void SetPref(String key, String value) {
         devicesPref.edit().putString(key, value).apply();
     }
+
     String GetName(String key, String def) {
         String temp = devicesPref.getString(key, def);
-        if(!temp.equals(def)) {
-            return gson.fromJson(temp, device.class).name;
+        if (!temp.equals(def)) {
+            return gson.fromJson(temp, Device.class).name;
         } else {
             return "Unknown";
         }
     }
+
     String GetNum(String key) {
         String temp = devicesPref.getString(key, "07xxx xxxxxx");
-        if(!temp.equals("07xxx xxxxxx")) {
-            return gson.fromJson(temp, device.class).number;
+        if (!temp.equals("07xxx xxxxxx")) {
+            return gson.fromJson(temp, Device.class).number;
         } else {
             return "07xxx xxxxxx";
         }
     }
+
     Boolean GetEn(String key, Boolean def) {
         String temp = devicesPref.getString(key, def.toString());
-        if(!temp.equals(def.toString())) {
-            return gson.fromJson(temp, device.class).enabled;
+        if (!temp.equals(def.toString())) {
+            return gson.fromJson(temp, Device.class).enabled;
         } else {
             return def;
         }
 
     }
 
-    void LoadOptions(){
+    void LoadOptions() {
         dev1.setChecked(GetEn("device1", true));
-        Log.d("LoadOptions ", "LoadOptions: dev1: " + devicesPref.getString("device1", ""));
         name1.setText(GetName("device1", "Home"));
         num1.setText(GetNum("device1"));
 
@@ -161,7 +146,6 @@ public class Settings extends AppCompatActivity {
         num3.setText(GetNum("device3"));
 
         netIP.setText(devicesPref.getString("netIP", "1.1.1.1"));
-
     }
 
 }
